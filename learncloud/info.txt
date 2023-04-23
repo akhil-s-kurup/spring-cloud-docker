@@ -1,0 +1,111 @@
+
+################################# Project Info ##############################################
+JAVA 11
+Spring boot 2.4.3
+Spring Cloud 2020.0.1
+
+
+#############################################################################################
+Eureka Server
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+		
+@SpringBootApplication
+@EnableEurekaServer
+public class DiscoveryserverApplication {
+
+
+server:
+  port: 8761
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    hostname: localhost
+logging:
+  level:
+    '[com.netflix.eureka]': 'OFF'
+    '[com.netflix.discovery]': 'OFF'
+
+
+###########################################################################################
+
+API-GateWay
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+@EnableEurekaClient
+public class GatewayApplication {
+
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://registration:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+ 
+spring:
+  application:
+    name: spring-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: serviceOne									 id: which is a unique identifier for the route
+        uri: lb://MICROSERVICE-ONE						 which specifies the location of the microservice to which requests should be routed.LB IS LOAD BALA
+        predicates:										 specifies the conditions under which the route should be applied
+        - Path=/service-one/*** 
+      - id: serviceTwo
+        uri: lb://MICROSERVICE-TWO
+        predicates:
+        - Path=/service-two/***     
+      - id: serviceThree
+        uri: lb://MICROSERVICE-THREE
+        predicates:
+        - Path=/service-three/***   
+
+
+##############################################################
+
+MICROSERVICE-ONE
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		
+		
+		
+spring:
+  application:
+    name: microservice-one
+server:
+  servlet:
+    context-path: /service-one
+  port: 8661
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://registration:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost  
+		

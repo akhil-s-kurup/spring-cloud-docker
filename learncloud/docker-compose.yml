@@ -1,0 +1,34 @@
+version: '3'
+services:
+  registration:
+    image: eureka:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices
+    container_name: registration
+  microserviceone:
+    image: microserviceone:latest
+    scale: 3 
+    networks:
+      - microservices
+  microservertwo:
+    image: microtwo:latest
+    ports:
+      - "8662:8662"
+    networks:
+      - microservices
+  microservicethree:
+    image: microthree:latest
+    ports:
+      - "8663:8663"
+    networks:
+      - microservices
+  gateway:
+    image: gateway:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices
+networks:
+  microservices:
